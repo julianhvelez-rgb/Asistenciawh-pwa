@@ -108,7 +108,6 @@ function crearGrupo(data) {
 	grupoErrorMsg = '';
 	navigate('grupo');
 }
-}
 
 function editarGrupo(idx) {
 	grupoEditando = { ...grupos[idx], idx };
