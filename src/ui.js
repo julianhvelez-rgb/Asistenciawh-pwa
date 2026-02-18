@@ -1,6 +1,26 @@
+// Renderiza la pantalla de login
+export function renderLoginScreen(container, onLogin) {
+  container.innerHTML = `
+    <div class="login-screen">
+      <h2>Iniciar sesión</h2>
+      <form id="login-form">
+        <label>Usuario:<input name="usuario" required></label><br>
+        <label>Contraseña:<input name="contrasena" type="password" required></label><br>
+        <button type="submit">Entrar</button>
+      </form>
+      <div id="login-error" style="color:red;"></div>
+    </div>
+  `;
+  document.getElementById('login-form').onsubmit = e => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target));
+    onLogin(data);
+  };
+}
+
 // ui.js: Renderiza la interfaz principal basada en el diseño Kivy
 
-export function renderMenuScreen(container, onNavigate) {
+export function renderMenuScreen(container, onNavigate, onCambiarCred) {
   container.innerHTML = `
     <div class="menu-screen">
       <h1>Control de Asistencia</h1>
@@ -8,12 +28,37 @@ export function renderMenuScreen(container, onNavigate) {
       <button id="btn-estudiantes">Registro de Estudiantes</button>
       <button id="btn-asistencia">Control de Asistencia</button>
       <button id="btn-reporte">Reporte Mensual</button>
+      <button id="btn-cambiar-cred">Cambiar usuario/contraseña</button>
     </div>
   `;
   document.getElementById('btn-grupos').onclick = () => onNavigate('grupo');
   document.getElementById('btn-estudiantes').onclick = () => onNavigate('registro');
   document.getElementById('btn-asistencia').onclick = () => onNavigate('asistencia');
   document.getElementById('btn-reporte').onclick = () => onNavigate('reporte');
+  document.getElementById('btn-cambiar-cred').onclick = onCambiarCred;
+}
+
+// Renderiza la pantalla para cambiar usuario/contraseña
+export function renderCambiarCredScreen(container, usuarioActual, onGuardar, onBack) {
+  container.innerHTML = `
+    <div class="cambiar-cred-screen">
+      <h2>Cambiar usuario/contraseña</h2>
+      <form id="cred-form">
+        <label>Usuario actual:<input name="usuario_actual" value="${usuarioActual}" required></label><br>
+        <label>Nuevo usuario:<input name="nuevo_usuario" required></label><br>
+        <label>Nueva contraseña:<input name="nuevo_contrasena" type="password" required></label><br>
+        <button type="submit">Guardar</button>
+      </form>
+      <button id="btn-back">Volver al menú</button>
+      <div id="cred-error" style="color:red;"></div>
+    </div>
+  `;
+  document.getElementById('btn-back').onclick = onBack;
+  document.getElementById('cred-form').onsubmit = e => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target));
+    onGuardar(data);
+  };
 }
 
 export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo) {

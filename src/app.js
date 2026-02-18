@@ -1,16 +1,38 @@
 
-import { renderMenuScreen, renderGrupoScreen, renderRegistroScreen, renderAsistenciaScreen, renderReporteScreen } from './ui.js';
+import { renderMenuScreen, renderGrupoScreen, renderRegistroScreen, renderAsistenciaScreen, renderReporteScreen, renderLoginScreen, renderCambiarCredScreen } from './ui.js';
+
 
 // Estado de la app (simula la estructura de la app Kivy)
 let grupos = JSON.parse(localStorage.getItem('grupos') || '[]');
 let estudiantes = JSON.parse(localStorage.getItem('estudiantes') || '[]');
 let asistencias = JSON.parse(localStorage.getItem('asistencias') || '[]');
 
+// Credenciales (usuario y contraseña) en localStorage
+function getCred() {
+	let cred = JSON.parse(localStorage.getItem('credenciales'));
+	if (!cred) {
+		cred = { usuario: 'admin', contrasena: 'admin' };
+		localStorage.setItem('credenciales', JSON.stringify(cred));
+	}
+	return cred;
+}
+function setCred(usuario, contrasena) {
+	localStorage.setItem('credenciales', JSON.stringify({ usuario, contrasena }));
+}
+
+let loggedIn = false;
+
+
 const app = document.getElementById('app');
 
+
 function navigate(screen) {
+	if (!loggedIn) {
+		showLogin();
+		return;
+	}
 	if (screen === 'menu') {
-		renderMenuScreen(app, navigate);
+		renderMenuScreen(app, navigate, showCambiarCred);
 	} else if (screen === 'grupo') {
 		renderGrupoScreen(app, grupos, () => navigate('menu'), crearGrupo);
 	} else if (screen === 'registro') {
@@ -20,6 +42,31 @@ function navigate(screen) {
 	} else if (screen === 'reporte') {
 		renderReporteScreen(app, estudiantes, asistencias, () => navigate('menu'), mostrarReporte);
 	}
+}
+
+function showLogin() {
+	renderLoginScreen(app, ({ usuario, contrasena }) => {
+		const cred = getCred();
+		if (usuario === cred.usuario && contrasena === cred.contrasena) {
+			loggedIn = true;
+			navigate('menu');
+		} else {
+			document.getElementById('login-error').textContent = 'Usuario o contraseña incorrectos.';
+		}
+	});
+}
+
+function showCambiarCred() {
+	const cred = getCred();
+	renderCambiarCredScreen(app, cred.usuario, (data) => {
+		if (data.usuario_actual !== cred.usuario) {
+			document.getElementById('cred-error').textContent = 'Usuario actual incorrecto.';
+			return;
+		}
+		setCred(data.nuevo_usuario, data.nuevo_contrasena);
+		alert('Usuario y contraseña actualizados.');
+		navigate('menu');
+	}, () => navigate('menu'));
 }
 
 function crearGrupo(data) {
@@ -90,5 +137,9 @@ function mostrarReporte(data) {
 	document.getElementById('texto-reporte').value = reporte;
 }
 
-// Inicializar en pantalla de menú
-navigate('menu');
+// Inicializar: mostrar login o menú
+if (!loggedIn) {
+	showLogin();
+} else {
+	navigate('menu');
+}
