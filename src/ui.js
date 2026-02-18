@@ -20,7 +20,7 @@ export function renderLoginScreen(container, onLogin) {
 
 // ui.js: Renderiza la interfaz principal basada en el diseño Kivy
 
-export function renderMenuScreen(container, onNavigate, onCambiarCred) {
+export function renderMenuScreen(container, onNavigate, onCambiarCred, onLogout) {
   container.innerHTML = `
     <div class="menu-screen">
       <h1>Control de Asistencia</h1>
@@ -29,6 +29,7 @@ export function renderMenuScreen(container, onNavigate, onCambiarCred) {
       <button id="btn-asistencia">Control de Asistencia</button>
       <button id="btn-reporte">Reporte Mensual</button>
       <button id="btn-cambiar-cred">Cambiar usuario/contraseña</button>
+      <button id="btn-logout">Salir</button>
     </div>
   `;
   document.getElementById('btn-grupos').onclick = () => onNavigate('grupo');
@@ -36,6 +37,7 @@ export function renderMenuScreen(container, onNavigate, onCambiarCred) {
   document.getElementById('btn-asistencia').onclick = () => onNavigate('asistencia');
   document.getElementById('btn-reporte').onclick = () => onNavigate('reporte');
   document.getElementById('btn-cambiar-cred').onclick = onCambiarCred;
+  document.getElementById('btn-logout').onclick = onLogout;
 }
 
 // Renderiza la pantalla para cambiar usuario/contraseña
@@ -61,17 +63,19 @@ export function renderCambiarCredScreen(container, usuarioActual, onGuardar, onB
   };
 }
 
-export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo) {
+export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEditarGrupo, grupoEditando, onGuardarEdicion, onCancelarEdicion, errorMsg) {
   container.innerHTML = `
     <h2>Gestión de Grupos</h2>
     <form id="grupo-form">
-      <label>Nombre del grupo:<input name="nombre" required></label><br>
-      <label>Día:<input name="dia" required></label><br>
-      <label>Hora inicio:<input name="hora_inicio" required></label><br>
-      <label>Hora fin:<input name="hora_fin" required></label><br>
-      <label>Clases requeridas/mes:<input name="clases_mes" required></label><br>
-      <button type="submit">Crear grupo</button>
+      <label>Nombre del grupo:<input name="nombre" value="${grupoEditando ? grupoEditando.nombre : ''}" required></label><br>
+      <label>Día:<input name="dia" value="${grupoEditando ? grupoEditando.dias : ''}" required></label><br>
+      <label>Hora inicio:<input name="hora_inicio" value="${grupoEditando ? (grupoEditando.horarios||'').split('-')[0] : ''}" required></label><br>
+      <label>Hora fin:<input name="hora_fin" value="${grupoEditando ? (grupoEditando.horarios||'').split('-')[1] : ''}" required></label><br>
+      <label>Clases requeridas/mes:<input name="clases_mes" value="${grupoEditando ? grupoEditando.clases_mes : ''}" required></label><br>
+      <button type="submit">${grupoEditando ? 'Guardar cambios' : 'Crear grupo'}</button>
+      ${grupoEditando ? '<button type="button" id="btn-cancelar-edicion">Cancelar</button>' : ''}
     </form>
+    <div id="grupo-error" style="color:red;">${errorMsg||''}</div>
     <h3>Grupos creados:</h3>
     <ul id="grupos-list"></ul>
     <button id="btn-back">Volver al menú</button>
@@ -80,10 +84,20 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo) {
   document.getElementById('grupo-form').onsubmit = e => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.target));
-    onCrearGrupo(data);
+    if (grupoEditando) {
+      onGuardarEdicion(data);
+    } else {
+      onCrearGrupo(data);
+    }
   };
+  if (grupoEditando && document.getElementById('btn-cancelar-edicion')) {
+    document.getElementById('btn-cancelar-edicion').onclick = onCancelarEdicion;
+  }
   const ul = document.getElementById('grupos-list');
-  ul.innerHTML = grupos.map(g => `<li>${g.nombre} - ${g.dias} ${g.horarios} (${g.clases_mes} clases/mes)</li>`).join('');
+  ul.innerHTML = grupos.map((g, i) => `<li>${g.nombre} - ${g.dias} ${g.horarios} (${g.clases_mes} clases/mes) <button data-idx="${i}" class="btn-editar">Editar</button></li>`).join('');
+  Array.from(document.getElementsByClassName('btn-editar')).forEach(btn => {
+    btn.onclick = () => onEditarGrupo(parseInt(btn.getAttribute('data-idx')));
+  });
 }
 
 export function renderRegistroScreen(container, estudiantes, onBack, onRegistrar) {

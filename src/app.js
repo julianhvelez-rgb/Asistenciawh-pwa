@@ -26,15 +26,36 @@ let loggedIn = false;
 const app = document.getElementById('app');
 
 
+
+function logout() {
+	loggedIn = false;
+	sessionStorage.removeItem('loggedIn');
+	showLogin();
+}
+
+// Estado para edición de grupos
+let grupoEditando = null;
+let grupoErrorMsg = '';
+
 function navigate(screen) {
-	if (!loggedIn) {
+	if (!loggedIn && sessionStorage.getItem('loggedIn') !== 'true') {
 		showLogin();
 		return;
 	}
 	if (screen === 'menu') {
-		renderMenuScreen(app, navigate, showCambiarCred);
+		renderMenuScreen(app, navigate, showCambiarCred, logout);
 	} else if (screen === 'grupo') {
-		renderGrupoScreen(app, grupos, () => navigate('menu'), crearGrupo);
+		renderGrupoScreen(
+			app,
+			grupos,
+			() => { grupoEditando = null; grupoErrorMsg = ''; navigate('menu'); },
+			crearGrupo,
+			editarGrupo,
+			grupoEditando,
+			guardarEdicionGrupo,
+			cancelarEdicionGrupo,
+			grupoErrorMsg
+		);
 	} else if (screen === 'registro') {
 		renderRegistroScreen(app, estudiantes, () => navigate('menu'), registrarEstudiante);
 	} else if (screen === 'asistencia') {
@@ -49,6 +70,7 @@ function showLogin() {
 		const cred = getCred();
 		if (usuario === cred.usuario && contrasena === cred.contrasena) {
 			loggedIn = true;
+			sessionStorage.setItem('loggedIn', 'true');
 			navigate('menu');
 		} else {
 			document.getElementById('login-error').textContent = 'Usuario o contraseña incorrectos.';
@@ -69,7 +91,11 @@ function showCambiarCred() {
 	}, () => navigate('menu'));
 }
 
-function crearGrupo(data) {
+	if (!data.nombre || !data.dia || !data.hora_inicio || !data.hora_fin || !data.clases_mes) {
+		grupoErrorMsg = 'Completa todos los campos.';
+		navigate('grupo');
+		return;
+	}
 	const grupo = {
 		nombre: data.nombre,
 		dias: data.dia,
@@ -78,6 +104,39 @@ function crearGrupo(data) {
 	};
 	grupos.push(grupo);
 	localStorage.setItem('grupos', JSON.stringify(grupos));
+	grupoErrorMsg = '';
+	navigate('grupo');
+}
+
+function editarGrupo(idx) {
+	grupoEditando = { ...grupos[idx], idx };
+	grupoErrorMsg = '';
+	navigate('grupo');
+}
+
+function guardarEdicionGrupo(data) {
+	if (!data.nombre || !data.dia || !data.hora_inicio || !data.hora_fin || !data.clases_mes) {
+		grupoErrorMsg = 'Completa todos los campos.';
+		navigate('grupo');
+		return;
+	}
+	if (grupoEditando && typeof grupoEditando.idx === 'number') {
+		grupos[grupoEditando.idx] = {
+			nombre: data.nombre,
+			dias: data.dia,
+			horarios: `${data.hora_inicio}-${data.hora_fin}`,
+			clases_mes: data.clases_mes
+		};
+		localStorage.setItem('grupos', JSON.stringify(grupos));
+		grupoEditando = null;
+		grupoErrorMsg = '';
+		navigate('grupo');
+	}
+}
+
+function cancelarEdicionGrupo() {
+	grupoEditando = null;
+	grupoErrorMsg = '';
 	navigate('grupo');
 }
 
@@ -137,9 +196,10 @@ function mostrarReporte(data) {
 	document.getElementById('texto-reporte').value = reporte;
 }
 
-// Inicializar: mostrar login o menú
-if (!loggedIn) {
-	showLogin();
-} else {
+// Mantener sesión activa salvo logout
+if (sessionStorage.getItem('loggedIn') === 'true') {
+	loggedIn = true;
 	navigate('menu');
+} else {
+	showLogin();
 }
