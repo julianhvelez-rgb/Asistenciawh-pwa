@@ -91,7 +91,23 @@ function showCambiarCred() {
 	}, () => navigate('menu'));
 }
 
-// (Eliminado: return ilegal fuera de función)
+function crearGrupo(data) {
+	if (!data.nombre || !data.dia || !data.hora_inicio || !data.hora_fin || !data.clases_mes) {
+		grupoErrorMsg = 'Completa todos los campos.';
+		navigate('grupo');
+		return;
+	}
+	const grupo = {
+		nombre: data.nombre,
+		dias: data.dia,
+		horarios: `${data.hora_inicio}-${data.hora_fin}`,
+		clases_mes: data.clases_mes
+	};
+	grupos.push(grupo);
+	localStorage.setItem('grupos', JSON.stringify(grupos));
+	grupoErrorMsg = '';
+	navigate('grupo');
+}
 }
 
 function editarGrupo(idx) {
