@@ -73,6 +73,39 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
   try {
     estudiantes = JSON.parse(localStorage.getItem('estudiantes') || '[]');
   } catch (e) {}
+  let gruposHtml = grupos.map(g => {
+    const ests = estudiantes.filter(e => e.grupo === g.nombre);
+    return `
+      <div style='margin-bottom:18px;border:1px solid #ccc;padding:8px;'>
+        <b>${g.nombre}</b><br>
+        <form class="estudiante-form-grupo" data-grupo="${g.nombre}">
+          <label>Tipo:
+            <select name="tipo">
+              <option value="Menor">Menor</option>
+              <option value="Adulto">Adulto</option>
+            </select>
+          </label><br>
+          <label>Nombre completo:<input name="nombre" required></label><br>
+          <label>Contacto:<input name="contacto"></label><br>
+          <label>Padres:<input name="padres"></label><br>
+          <label>Contacto padres:<input name="contacto_padres"></label><br>
+          <input type="hidden" name="grupo" value="${g.nombre}">
+          <button type="submit">Registrar estudiante</button>
+        </form>
+        <div><b>Estudiantes:</b><br>
+          ${ests.length ? ests.map(e => `
+            <div style='margin-bottom:6px;padding-left:10px;'>
+              <b>Nombre:</b> ${e.nombre}<br>
+              <b>Tipo:</b> ${e.tipo}<br>
+              <b>Contacto:</b> ${e.contacto || '-'}<br>
+              <b>Padres:</b> ${e.padres || '-'}<br>
+              <b>Contacto padres:</b> ${e.contacto_padres || '-'}
+            </div>
+          `).join('') : '<span style="color:#888">(Sin estudiantes)</span>'}
+        </div>
+      </div>
+    `;
+  }).join('');
   container.innerHTML = `
     <h2>Gestión de Grupos</h2>
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
@@ -84,42 +117,8 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
     <h3>Grupos creados:</h3>
     <ul id="grupos-list"></ul>
     <h3>Registro y estudiantes por grupo:</h3>
-    <div id="estudiantes-por-grupo">
-      ${grupos.map(g => {
-        const ests = estudiantes.filter(e => e.grupo === g.nombre);
-        return `
-          <div style='margin-bottom:18px;border:1px solid #ccc;padding:8px;'>
-            <b>${g.nombre}</b><br>
-            <form class="estudiante-form-grupo" data-grupo="${g.nombre}">
-              <label>Tipo:
-                <select name="tipo">
-                  <option value="Menor">Menor</option>
-                  <option value="Adulto">Adulto</option>
-                </select>
-              </label><br>
-              <label>Nombre completo:<input name="nombre" required></label><br>
-              <label>Contacto:<input name="contacto"></label><br>
-              <label>Padres:<input name="padres"></label><br>
-              <label>Contacto padres:<input name="contacto_padres"></label><br>
-              <input type="hidden" name="grupo" value="${g.nombre}">
-              <button type="submit">Registrar estudiante</button>
-            </form>
-            <div><b>Estudiantes:</b><br>
-              ${ests.length ? ests.map(e => `
-                <div style='margin-bottom:6px;padding-left:10px;'>
-                  <b>Nombre:</b> ${e.nombre}<br>
-                  <b>Tipo:</b> ${e.tipo}<br>
-                  <b>Contacto:</b> ${e.contacto || '-'}<br>
-                  <b>Padres:</b> ${e.padres || '-'}<br>
-                  <b>Contacto padres:</b> ${e.contacto_padres || '-'}
-                </div>
-              `).join('') : '<span style=\'color:#888\'>(Sin estudiantes)</span>'}
-            </div>
-          </div>
-        `;
-      }).join('')}
-    </div>
-
+    <div id="estudiantes-por-grupo">${gruposHtml}</div>
+  `;
   // Lógica para mostrar el formulario de grupo y manejar horarios
   setTimeout(() => {
     const btnMasGrupo = document.getElementById('btn-mas-grupo');
