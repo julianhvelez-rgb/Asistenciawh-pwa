@@ -131,22 +131,20 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
 				const formContainer = document.getElementById('grupo-form-container');
 				formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
 				if (formContainer.innerHTML === '') {
-					formContainer.innerHTML =
-						'<form id="grupo-form">' +
-							'<label>Nombre del grupo:<input name="nombre" required></label><br>' +
-							'<label>Días:<br>' +
-								'<input type="checkbox" name="dias" value="Lunes">Lunes ' +
-								'<input type="checkbox" name="dias" value="Martes">Martes ' +
-								'<input type="checkbox" name="dias" value="Miércoles">Miércoles ' +
-								'<input type="checkbox" name="dias" value="Jueves">Jueves ' +
-								'<input type="checkbox" name="dias" value="Viernes">Viernes ' +
-								'<input type="checkbox" name="dias" value="Sábado">Sábado ' +
-								'<input type="checkbox" name="dias" value="Domingo">Domingo ' +
-							'</label><br>' +
-							'<div id="horarios-por-dia"></div>' +
-							'<label>Clases requeridas/mes:<input name="clases_mes" required></label><br>' +
-							'<button type="submit">Crear grupo</button>' +
-						'</form>';
+							 formContainer.innerHTML =
+									 '<form id="grupo-form" style="background:#f8f8ff;border:2px solid #1976d2;padding:16px;border-radius:8px;max-width:400px;">' +
+										 '<label>Nombre del grupo:<input name="nombre" required></label><br>' +
+										 '<label>Días:<br>' +
+											 '<input type="checkbox" name="dias" value="Lunes">Lunes ' +
+											 '<input type="checkbox" name="dias" value="Martes">Martes ' +
+											 '<input type="checkbox" name="dias" value="Miércoles">Miércoles ' +
+											 '<input type="checkbox" name="dias" value="Jueves">Jueves ' +
+											 '<input type="checkbox" name="dias" value="Viernes">Viernes ' +
+										 '</label><br>' +
+										 '<div id="horarios-por-dia"></div>' +
+										 '<label>Clases requeridas/mes:<input name="clases_mes" required></label><br>' +
+										 '<button type="submit" style="background:#1976d2;color:white;padding:8px 16px;border:none;border-radius:4px;">Crear grupo</button>' +
+									 '</form>';
 					// Script para mostrar campos de horarios por cada día seleccionado
 					const diasCheckboxes = formContainer.querySelectorAll('input[name="dias"]');
 					const horariosPorDiaDiv = formContainer.querySelector('#horarios-por-dia');
