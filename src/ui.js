@@ -17,7 +17,6 @@ export function renderLoginScreen(container, onLogin) {
     const data = Object.fromEntries(new FormData(e.target));
     onLogin(data);
   };
-}
 
 // ui.js: Renderiza la interfaz principal basada en el diseño Kivy
 
