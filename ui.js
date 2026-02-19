@@ -111,11 +111,10 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
 		`;
 	}).join('');
 	container.innerHTML = `
-		<h2>Gestión de Grupos</h2>
-		<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-			<h2 style="margin:0;">Gestión de Grupos</h2>
-			<button id="btn-mas-grupo" title="Crear nuevo grupo" style="background:none;border:none;cursor:pointer;padding:2px;font-size:22px;line-height:1;">+</button>
-		</div>
+		   <div style="display:flex;justify-content:center;align-items:center;gap:14px;margin-bottom:18px;">
+			   <h2 style="margin:0;font-size:2rem;font-weight:700;letter-spacing:0.5px;text-align:center;flex:1;">Gestión de Grupos</h2>
+			   <button id="btn-mas-grupo" title="Crear nuevo grupo" style="background:#1976d2;color:white;border:none;cursor:pointer;padding:0 0.7em;font-size:2.1rem;line-height:1.1;border-radius:50%;box-shadow:0 2px 8px #1976d233;display:flex;align-items:center;justify-content:center;transition:background .2s;">+</button>
+		   </div>
 		<div id="grupo-form-container" style="display:none;margin-bottom:16px;"></div>
 		<div id="grupo-error" style="color:red;">${errorMsg||''}</div>
 		<h3>Grupos creados:</h3>
