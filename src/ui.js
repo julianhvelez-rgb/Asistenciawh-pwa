@@ -155,29 +155,10 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
                   '<b>' + dia + '</b><br>' +
                   '<label>Hora inicio:<input name="hora_inicio_' + dia + '" type="time" required></label>' +
                   '<label>Hora fin:<input name="hora_fin_' + dia + '" type="time" required></label>' +
-                  </div>
-
-                // Lógica para mostrar el formulario de grupo y manejar horarios
-                setTimeout(() => {
-                  const btnMasGrupo = document.getElementById('btn-mas-grupo');
-                  if (btnMasGrupo) {
-                    btnMasGrupo.onclick = function() {
-                      const formContainer = document.getElementById('grupo-form-container');
-                      formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
-                      if (formContainer.innerHTML === '') {
-                        formContainer.innerHTML = '<form id="grupo-form">' +
-                          '<label>Nombre del grupo:<input name="nombre" required></label><br>' +
-                          '<label>Días:<br>' +
-                            '<input type="checkbox" name="dias" value="Lunes">Lunes ' +
-                            '<input type="checkbox" name="dias" value="Martes">Martes ' +
-                            '<input type="checkbox" name="dias" value="Miércoles">Miércoles ' +
-                            '<input type="checkbox" name="dias" value="Jueves">Jueves ' +
-                            '<input type="checkbox" name="dias" value="Viernes">Viernes ' +
-                            '<input type="checkbox" name="dias" value="Sábado">Sábado ' +
-                            '<input type="checkbox" name="dias" value="Domingo">Domingo ' +
-                          '</label><br>' +
-                          '<div id="horarios-por-dia"></div>' +
-                          '<label>Clases requeridas/mes:<input name="clases_mes" required></label><br>' +
+                  '</div>';
+              }
+            });
+          }
                           '<button type="submit">Crear grupo</button>' +
                         '</form>';
                         // Script para mostrar campos de horarios por cada día seleccionado
