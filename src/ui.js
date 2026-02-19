@@ -144,7 +144,7 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
               '<button type="submit">Crear grupo</button>' +
             '</form>';
           // Script para mostrar campos de horarios por cada día seleccionado
-          const diasCheckboxes = formContainer.querySelectorAll('input[name="dias"]');
+          let diasCheckboxes = formContainer.querySelectorAll('input[name="dias"]');
           const horariosPorDiaDiv = formContainer.querySelector('#horarios-por-dia');
           function actualizarHorariosPorDia() {
             horariosPorDiaDiv.innerHTML = '';
