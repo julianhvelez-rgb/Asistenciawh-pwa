@@ -21,6 +21,7 @@ function setCred(usuario, contrasena) {
 }
 
 let loggedIn = false;
+console.log('App iniciando...');
 
 
 const app = document.getElementById('app');
@@ -38,6 +39,7 @@ let grupoEditando = null;
 let grupoErrorMsg = '';
 
 function navigate(screen) {
+		console.log('navigate:', screen);
 	if (!loggedIn && sessionStorage.getItem('loggedIn') !== 'true') {
 		showLogin();
 		return;
@@ -66,6 +68,7 @@ function navigate(screen) {
 }
 
 function showLogin() {
+		console.log('showLogin');
 	renderLoginScreen(app, ({ usuario, contrasena }) => {
 		const cred = getCred();
 		if (usuario === cred.usuario && contrasena === cred.contrasena) {
@@ -79,6 +82,7 @@ function showLogin() {
 }
 
 function showCambiarCred() {
+		console.log('showCambiarCred');
 	const cred = getCred();
 	renderCambiarCredScreen(app, cred.usuario, (data) => {
 		if (data.usuario_actual !== cred.usuario) {
@@ -92,6 +96,7 @@ function showCambiarCred() {
 }
 
 function crearGrupo(data) {
+		console.log('crearGrupo', data);
 	if (!data.nombre || !data.dias || !data.clases_mes) {
 		grupoErrorMsg = 'Completa todos los campos.';
 		navigate('grupo');
@@ -125,12 +130,14 @@ function crearGrupo(data) {
 }
 
 function editarGrupo(idx) {
+		console.log('editarGrupo', idx);
 	grupoEditando = { ...grupos[idx], idx };
 	grupoErrorMsg = '';
 	navigate('grupo');
 }
 
 function guardarEdicionGrupo(data) {
+		console.log('guardarEdicionGrupo', data);
 	if (!data.nombre || !data.dia || !data.hora_inicio || !data.hora_fin || !data.clases_mes) {
 		grupoErrorMsg = 'Completa todos los campos.';
 		navigate('grupo');
@@ -151,12 +158,14 @@ function guardarEdicionGrupo(data) {
 }
 
 function cancelarEdicionGrupo() {
+		console.log('cancelarEdicionGrupo');
 	grupoEditando = null;
 	grupoErrorMsg = '';
 	navigate('grupo');
 }
 
 function registrarEstudiante(data) {
+		console.log('registrarEstudiante', data);
 	if (!data.nombre || !data.grupo) {
 		alert('Nombre y grupo son obligatorios.');
 		return;
@@ -179,6 +188,7 @@ function registrarEstudiante(data) {
 }
 
 function marcarAsistencia(data) {
+		console.log('marcarAsistencia', data);
 	if (!data.nombre || !data.grupo) {
 		alert('Nombre y grupo son obligatorios.');
 		return;
@@ -192,6 +202,7 @@ function marcarAsistencia(data) {
 }
 
 function mostrarReporte(data) {
+		console.log('mostrarReporte', data);
 	const mes = parseInt(data.mes);
 	const anio = parseInt(data.anio);
 	if (isNaN(mes) || isNaN(anio)) {

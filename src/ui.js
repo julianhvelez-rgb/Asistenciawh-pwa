@@ -1,3 +1,4 @@
+  console.log('renderGrupoScreen', {grupos, grupoEditando, errorMsg});
 // Renderiza la pantalla de login
 export function renderLoginScreen(container, onLogin) {
   container.innerHTML = `
