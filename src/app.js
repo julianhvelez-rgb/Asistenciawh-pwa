@@ -57,7 +57,7 @@ function navigate(screen) {
 			grupoErrorMsg
 		);
 	} else if (screen === 'registro') {
-		renderRegistroScreen(app, estudiantes, () => navigate('menu'), registrarEstudiante);
+		renderRegistroScreen(app, estudiantes, grupos, () => navigate('menu'), registrarEstudiante);
 	} else if (screen === 'asistencia') {
 		renderAsistenciaScreen(app, estudiantes, () => navigate('menu'), marcarAsistencia);
 	} else if (screen === 'reporte') {

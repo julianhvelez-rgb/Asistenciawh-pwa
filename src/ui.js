@@ -22,22 +22,28 @@ export function renderLoginScreen(container, onLogin) {
 
 export function renderMenuScreen(container, onNavigate, onCambiarCred, onLogout) {
   container.innerHTML = `
+    <div class="menu-header" style="display:flex;justify-content:flex-end;align-items:center;padding:8px 0 8px 0;gap:10px;">
+      <button id="settings-icon" title="Cambiar usuario/contraseña" style="background:none;border:none;cursor:pointer;padding:4px;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09A1.65 1.65 0 0 0 16 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 8c.14.31.22.65.22 1v.09A1.65 1.65 0 0 0 21 12c0 .35-.08.69-.22 1v.09A1.65 1.65 0 0 0 19.4 15z"/></svg>
+      </button>
+      <button id="logout-icon" title="Salir" style="background:none;border:none;cursor:pointer;padding:4px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
     <div class="menu-screen">
       <h1>Control de Asistencia</h1>
       <button id="btn-grupos">Gestión de Grupos</button>
       <button id="btn-estudiantes">Registro de Estudiantes</button>
       <button id="btn-asistencia">Control de Asistencia</button>
       <button id="btn-reporte">Reporte Mensual</button>
-      <button id="btn-cambiar-cred">Cambiar usuario/contraseña</button>
-      <button id="btn-logout">Salir</button>
     </div>
   `;
   document.getElementById('btn-grupos').onclick = () => onNavigate('grupo');
   document.getElementById('btn-estudiantes').onclick = () => onNavigate('registro');
   document.getElementById('btn-asistencia').onclick = () => onNavigate('asistencia');
   document.getElementById('btn-reporte').onclick = () => onNavigate('reporte');
-  document.getElementById('btn-cambiar-cred').onclick = onCambiarCred;
-  document.getElementById('btn-logout').onclick = onLogout;
+  document.getElementById('settings-icon').onclick = onCambiarCred;
+  document.getElementById('logout-icon').onclick = onLogout;
 }
 
 // Renderiza la pantalla para cambiar usuario/contraseña
@@ -64,6 +70,11 @@ export function renderCambiarCredScreen(container, usuarioActual, onGuardar, onB
 }
 
 export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEditarGrupo, grupoEditando, onGuardarEdicion, onCancelarEdicion, errorMsg) {
+  // Obtener estudiantes desde localStorage
+  let estudiantes = [];
+  try {
+    estudiantes = JSON.parse(localStorage.getItem('estudiantes') || '[]');
+  } catch (e) {}
   container.innerHTML = `
     <h2>Gestión de Grupos</h2>
     <form id="grupo-form">
@@ -78,6 +89,13 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
     <div id="grupo-error" style="color:red;">${errorMsg||''}</div>
     <h3>Grupos creados:</h3>
     <ul id="grupos-list"></ul>
+    <h3>Estudiantes por grupo:</h3>
+    <div id="estudiantes-por-grupo">
+      ${grupos.map(g => {
+        const ests = estudiantes.filter(e => e.grupo === g.nombre);
+        return `<div style='margin-bottom:10px;'><b>${g.nombre}:</b> ${ests.length ? ests.map(e => e.nombre).join(', ') : '<span style=\'color:#888\'>(Sin estudiantes)</span>'}</div>`;
+      }).join('')}
+    </div>
     <button id="btn-back">Volver al menú</button>
   `;
   document.getElementById('btn-back').onclick = onBack;
@@ -100,7 +118,7 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
   });
 }
 
-export function renderRegistroScreen(container, estudiantes, onBack, onRegistrar) {
+export function renderRegistroScreen(container, estudiantes, grupos, onBack, onRegistrar) {
   container.innerHTML = `
     <h2>Registro de Estudiantes</h2>
     <form id="estudiante-form">
@@ -112,7 +130,12 @@ export function renderRegistroScreen(container, estudiantes, onBack, onRegistrar
       </label><br>
       <label>Nombre completo:<input name="nombre" required></label><br>
       <label>Contacto:<input name="contacto"></label><br>
-      <label>Grupo:<input name="grupo" required></label><br>
+      <label>Grupo:
+        <select name="grupo" required>
+          <option value="">Seleccione un grupo</option>
+          ${grupos && grupos.length ? grupos.map(g => `<option value="${g.nombre}">${g.nombre}</option>`).join('') : ''}
+        </select>
+      </label><br>
       <label>Padres:<input name="padres"></label><br>
       <label>Contacto padres:<input name="contacto_padres"></label><br>
       <button type="submit">Registrar estudiante</button>
