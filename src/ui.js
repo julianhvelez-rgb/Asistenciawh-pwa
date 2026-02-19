@@ -33,7 +33,6 @@ export function renderMenuScreen(container, onNavigate, onCambiarCred, onLogout)
     <div class="menu-screen">
       <h1>Control de Asistencia</h1>
       <button id="btn-grupos">Gestión de Grupos</button>
-      <button id="btn-estudiantes">Registro de Estudiantes</button>
       <button id="btn-asistencia">Control de Asistencia</button>
       <button id="btn-reporte">Reporte Mensual</button>
     </div>
@@ -77,11 +76,61 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
   } catch (e) {}
   container.innerHTML = `
     <h2>Gestión de Grupos</h2>
-    <form id="grupo-form">
-      <label>Nombre del grupo:<input name="nombre" value="${grupoEditando ? grupoEditando.nombre : ''}" required></label><br>
-      <label>Día:<input name="dia" value="${grupoEditando ? grupoEditando.dias : ''}" required></label><br>
-      <label>Hora inicio:<input name="hora_inicio" value="${grupoEditando ? (grupoEditando.horarios||'').split('-')[0] : ''}" required></label><br>
-      <label>Hora fin:<input name="hora_fin" value="${grupoEditando ? (grupoEditando.horarios||'').split('-')[1] : ''}" required></label><br>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <h2 style="margin:0;">Gestión de Grupos</h2>
+      <button id="btn-mas-grupo" title="Crear nuevo grupo" style="background:none;border:none;cursor:pointer;padding:2px;font-size:22px;line-height:1;">+</button>
+    </div>
+    <div id="grupo-form-container" style="display:none;margin-bottom:16px;"></div>
+    <script>
+      // Mostrar formulario al hacer clic en el botón +
+      document.getElementById('btn-mas-grupo').onclick = function() {
+        const formContainer = document.getElementById('grupo-form-container');
+        formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
+        if (formContainer.innerHTML === '') {
+          formContainer.innerHTML = `
+            <form id="grupo-form">
+              <label>Nombre del grupo:<input name="nombre" required></label><br>
+              <label>Días:<br>
+                <input type="checkbox" name="dias" value="Lunes">Lunes
+                <input type="checkbox" name="dias" value="Martes">Martes
+                <input type="checkbox" name="dias" value="Miércoles">Miércoles
+                <input type="checkbox" name="dias" value="Jueves">Jueves
+                <input type="checkbox" name="dias" value="Viernes">Viernes
+                <input type="checkbox" name="dias" value="Sábado">Sábado
+                <input type="checkbox" name="dias" value="Domingo">Domingo
+              </label><br>
+              <div id="horarios-por-dia"></div>
+              <label>Clases requeridas/mes:<input name="clases_mes" required></label><br>
+              <button type="submit">Crear grupo</button>
+            </form>
+          `;
+          // Script para mostrar campos de horarios por cada día seleccionado
+          const diasCheckboxes = formContainer.querySelectorAll('input[name="dias"]');
+          const horariosPorDiaDiv = formContainer.querySelector('#horarios-por-dia');
+          function actualizarHorariosPorDia() {
+            horariosPorDiaDiv.innerHTML = '';
+            diasCheckboxes.forEach(cb => {
+              if (cb.checked) {
+                const dia = cb.value;
+                horariosPorDiaDiv.innerHTML += `
+                  <div style='margin-bottom:8px;'>
+                    <b>${dia}</b><br>
+                    <label>Hora inicio:<input name="hora_inicio_${dia}" type="time" required></label>
+                    <label>Hora fin:<input name="hora_fin_${dia}" type="time" required></label>
+                  </div>
+                `;
+              }
+            });
+          }
+          diasCheckboxes.forEach(cb => cb.addEventListener('change', actualizarHorariosPorDia));
+          formContainer.querySelector('#grupo-form').onsubmit = function(e) {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target));
+            onCrearGrupo(data);
+          };
+        }
+      };
+    </script>
       <label>Clases requeridas/mes:<input name="clases_mes" value="${grupoEditando ? grupoEditando.clases_mes : ''}" required></label><br>
       <button type="submit">${grupoEditando ? 'Guardar cambios' : 'Crear grupo'}</button>
       ${grupoEditando ? '<button type="button" id="btn-cancelar-edicion">Cancelar</button>' : ''}
@@ -89,13 +138,57 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
     <div id="grupo-error" style="color:red;">${errorMsg||''}</div>
     <h3>Grupos creados:</h3>
     <ul id="grupos-list"></ul>
-    <h3>Estudiantes por grupo:</h3>
+    <h3>Registro y estudiantes por grupo:</h3>
     <div id="estudiantes-por-grupo">
       ${grupos.map(g => {
         const ests = estudiantes.filter(e => e.grupo === g.nombre);
-        return `<div style='margin-bottom:10px;'><b>${g.nombre}:</b> ${ests.length ? ests.map(e => e.nombre).join(', ') : '<span style=\'color:#888\'>(Sin estudiantes)</span>'}</div>`;
+        return `
+          <div style='margin-bottom:18px;border:1px solid #ccc;padding:8px;'>
+            <b>${g.nombre}</b><br>
+            <form class="estudiante-form-grupo" data-grupo="${g.nombre}">
+              <label>Tipo:
+                <select name="tipo">
+                  <option value="Menor">Menor</option>
+                  <option value="Adulto">Adulto</option>
+                </select>
+              </label><br>
+              <label>Nombre completo:<input name="nombre" required></label><br>
+              <label>Contacto:<input name="contacto"></label><br>
+              <label>Padres:<input name="padres"></label><br>
+              <label>Contacto padres:<input name="contacto_padres"></label><br>
+              <input type="hidden" name="grupo" value="${g.nombre}">
+              <button type="submit">Registrar estudiante</button>
+            </form>
+            <div><b>Estudiantes:</b><br>
+              ${ests.length ? ests.map(e => `
+                <div style='margin-bottom:6px;padding-left:10px;'>
+                  <b>Nombre:</b> ${e.nombre}<br>
+                  <b>Tipo:</b> ${e.tipo}<br>
+                  <b>Contacto:</b> ${e.contacto || '-'}<br>
+                  <b>Padres:</b> ${e.padres || '-'}<br>
+                  <b>Contacto padres:</b> ${e.contacto_padres || '-'}
+                </div>
+              `).join('') : '<span style=\'color:#888\'>(Sin estudiantes)</span>'}
+            </div>
+          </div>
+        `;
       }).join('')}
     </div>
+    <script>
+      // Manejar registro de estudiantes por grupo
+      document.querySelectorAll('.estudiante-form-grupo').forEach(form => {
+        form.onsubmit = function(e) {
+          e.preventDefault();
+          const data = Object.fromEntries(new FormData(form));
+          // Guardar estudiante en localStorage
+          let estudiantes = [];
+          try { estudiantes = JSON.parse(localStorage.getItem('estudiantes') || '[]'); } catch (e) {}
+          estudiantes.push(data);
+          localStorage.setItem('estudiantes', JSON.stringify(estudiantes));
+          location.reload();
+        };
+      });
+    </script>
     <button id="btn-back">Volver al menú</button>
   `;
   document.getElementById('btn-back').onclick = onBack;
