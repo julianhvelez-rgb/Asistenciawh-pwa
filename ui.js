@@ -132,19 +132,29 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
 				formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
 				if (formContainer.innerHTML === '') {
 							 formContainer.innerHTML =
-									 '<form id="grupo-form" style="background:#f8f8ff;border:2px solid #1976d2;padding:16px;border-radius:8px;max-width:400px;">' +
-										 '<label>Nombre del grupo:<input name="nombre" required></label><br>' +
-										 '<label>Días:<br>' +
-											 '<input type="checkbox" name="dias" value="Lunes">Lunes ' +
-											 '<input type="checkbox" name="dias" value="Martes">Martes ' +
-											 '<input type="checkbox" name="dias" value="Miércoles">Miércoles ' +
-											 '<input type="checkbox" name="dias" value="Jueves">Jueves ' +
-											 '<input type="checkbox" name="dias" value="Viernes">Viernes ' +
-										 '</label><br>' +
-										 '<div id="horarios-por-dia"></div>' +
-										 '<label>Clases requeridas/mes:<input name="clases_mes" required></label><br>' +
-										 '<button type="submit" style="background:#1976d2;color:white;padding:8px 16px;border:none;border-radius:4px;">Crear grupo</button>' +
-									 '</form>';
+									 `<form id="grupo-form" style="background:#fff;border-radius:16px;box-shadow:0 4px 16px #0002;padding:28px 24px 20px 24px;max-width:420px;margin:auto;font-family:'Segoe UI',Arial,sans-serif;">
+										 <h3 style="margin-top:0;margin-bottom:18px;font-weight:600;color:#1976d2;letter-spacing:0.5px;">Nuevo Grupo</h3>
+										 <div style="margin-bottom:16px;">
+											 <label style="display:block;font-weight:500;margin-bottom:6px;">Nombre del grupo</label>
+											 <input name="nombre" required style="width:100%;padding:8px 10px;border:1.5px solid #b0bec5;border-radius:6px;font-size:1rem;outline:none;transition:border .2s;" onfocus="this.style.borderColor='#1976d2'">
+										 </div>
+										 <div style="margin-bottom:16px;">
+											 <label style="display:block;font-weight:500;margin-bottom:6px;">Días de entrenamiento</label>
+											 <div style="display:flex;gap:10px;flex-wrap:wrap;">
+												 <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" name="dias" value="Lunes" style="accent-color:#1976d2;">Lunes</label>
+												 <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" name="dias" value="Martes" style="accent-color:#1976d2;">Martes</label>
+												 <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" name="dias" value="Miércoles" style="accent-color:#1976d2;">Miércoles</label>
+												 <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" name="dias" value="Jueves" style="accent-color:#1976d2;">Jueves</label>
+												 <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" name="dias" value="Viernes" style="accent-color:#1976d2;">Viernes</label>
+											 </div>
+										 </div>
+										 <div id="horarios-por-dia" style="margin-bottom:16px;"></div>
+										 <div style="margin-bottom:18px;">
+											 <label style="display:block;font-weight:500;margin-bottom:6px;">Clases requeridas/mes</label>
+											 <input name="clases_mes" required type="number" min="1" style="width:100%;padding:8px 10px;border:1.5px solid #b0bec5;border-radius:6px;font-size:1rem;outline:none;transition:border .2s;" onfocus="this.style.borderColor='#1976d2'">
+										 </div>
+										 <button type="submit" style="background:#1976d2;color:white;padding:10px 0;width:100%;font-size:1.1rem;font-weight:600;border:none;border-radius:8px;box-shadow:0 2px 8px #1976d233;cursor:pointer;transition:background .2s;">Crear grupo</button>
+									 </form>`;
 					// Script para mostrar campos de horarios por cada día seleccionado
 					const diasCheckboxes = formContainer.querySelectorAll('input[name="dias"]');
 					const horariosPorDiaDiv = formContainer.querySelector('#horarios-por-dia');
