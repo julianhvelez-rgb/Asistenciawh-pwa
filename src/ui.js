@@ -197,7 +197,6 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
       };
     });
   }, 0);
-    <button id="btn-back">Volver al menú</button>
   `;
   document.getElementById('btn-back').onclick = onBack;
   document.getElementById('grupo-form').onsubmit = e => {
