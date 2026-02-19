@@ -144,7 +144,7 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
               '<button type="submit">Crear grupo</button>' +
             '</form>';
           // Script para mostrar campos de horarios por cada día seleccionado
-          let diasCheckboxes = formContainer.querySelectorAll('input[name="dias"]');
+          const diasCheckboxes = formContainer.querySelectorAll('input[name="dias"]');
           const horariosPorDiaDiv = formContainer.querySelector('#horarios-por-dia');
           function actualizarHorariosPorDia() {
             horariosPorDiaDiv.innerHTML = '';
@@ -159,25 +159,7 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
               }
             });
           }
-                          '<button type="submit">Crear grupo</button>' +
-                        '</form>';
-                        // Script para mostrar campos de horarios por cada día seleccionado
-                        const diasCheckboxes = formContainer.querySelectorAll('input[name="dias"]');
-                        const horariosPorDiaDiv = formContainer.querySelector('#horarios-por-dia');
-                        function actualizarHorariosPorDia() {
-                          horariosPorDiaDiv.innerHTML = '';
-                          diasCheckboxes.forEach(cb => {
-                            if (cb.checked) {
-                              const dia = cb.value;
-                              horariosPorDiaDiv.innerHTML += '<div style="margin-bottom:8px;">' +
-                                '<b>' + dia + '</b><br>' +
-                                '<label>Hora inicio:<input name="hora_inicio_' + dia + '" type="time" required></label>' +
-                                '<label>Hora fin:<input name="hora_fin_' + dia + '" type="time" required></label>' +
-                                '</div>';
-                            }
-                          });
-                        }
-                        diasCheckboxes.forEach(cb => cb.addEventListener('change', actualizarHorariosPorDia));
+          diasCheckboxes.forEach(cb => cb.addEventListener('change', actualizarHorariosPorDia));
                         formContainer.querySelector('#grupo-form').onsubmit = function(e) {
                           e.preventDefault();
                           const data = Object.fromEntries(new FormData(e.target));
