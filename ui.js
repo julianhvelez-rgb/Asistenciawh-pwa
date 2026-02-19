@@ -116,6 +116,7 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
 			   <button id="btn-mas-grupo" title="Crear nuevo grupo" style="background:transparent;color:#1976d2;border:none;cursor:pointer;padding:0;font-size:2.1rem;line-height:1.1;display:flex;align-items:center;justify-content:center;">+</button>
 		   </div>
 		<div id="grupo-form-container" style="display:none;margin-bottom:16px;"></div>
+		<button id="btn-back-grupo" style="background:#1976d2;color:white;padding:8px 18px;border:none;border-radius:6px;font-size:1rem;font-weight:500;margin-bottom:18px;cursor:pointer;display:block;margin:auto;">Volver al menú</button>
 		<div id="grupo-error" style="color:red;">${errorMsg||''}</div>
 		<h3>Grupos creados:</h3>
 		<ul id="grupos-list"></ul>
@@ -124,6 +125,8 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
 	`;
 	// Lógica para mostrar el formulario de grupo y manejar horarios
 	setTimeout(() => {
+			const btnBackGrupo = document.getElementById('btn-back-grupo');
+			if (btnBackGrupo) btnBackGrupo.onclick = onBack;
 		const btnMasGrupo = document.getElementById('btn-mas-grupo');
 		if (btnMasGrupo) {
 			btnMasGrupo.onclick = function() {
