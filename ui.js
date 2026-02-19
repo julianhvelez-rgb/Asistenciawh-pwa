@@ -132,27 +132,28 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
 				if (formContainer.innerHTML === '') {
 							 formContainer.innerHTML =
 									 `<form id="grupo-form" style="background:#fff;border-radius:16px;box-shadow:0 4px 16px #0002;padding:28px 24px 20px 24px;max-width:420px;margin:auto;font-family:'Segoe UI',Arial,sans-serif;">
-										 <h3 style="margin-top:0;margin-bottom:18px;font-weight:600;color:#1976d2;letter-spacing:0.5px;">Nuevo Grupo</h3>
+										 <h3 style="margin-top:0;margin-bottom:18px;font-weight:600;color:#1976d2;letter-spacing:0.5px;">${grupoEditando ? 'Editar Grupo' : 'Nuevo Grupo'}</h3>
 										 <div style="margin-bottom:16px;">
 											 <label style="display:block;font-weight:500;margin-bottom:6px;">Nombre del grupo</label>
-											 <input name="nombre" required style="width:100%;padding:8px 10px;border:1.5px solid #b0bec5;border-radius:6px;font-size:1rem;outline:none;transition:border .2s;" onfocus="this.style.borderColor='#1976d2'">
+											 <input name="nombre" required style="width:100%;padding:8px 10px;border:1.5px solid #b0bec5;border-radius:6px;font-size:1rem;outline:none;transition:border .2s;" onfocus="this.style.borderColor='#1976d2'" value="${grupoEditando ? grupoEditando.nombre : ''}">
 										 </div>
 										 <div style="margin-bottom:16px;">
 											 <label style="display:block;font-weight:500;margin-bottom:6px;">Días de entrenamiento</label>
 											 <div style="display:flex;gap:10px;flex-wrap:wrap;">
-												 <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" name="dias" value="Lunes" style="accent-color:#1976d2;">Lunes</label>
-												 <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" name="dias" value="Martes" style="accent-color:#1976d2;">Martes</label>
-												 <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" name="dias" value="Miércoles" style="accent-color:#1976d2;">Miércoles</label>
-												 <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" name="dias" value="Jueves" style="accent-color:#1976d2;">Jueves</label>
-												 <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" name="dias" value="Viernes" style="accent-color:#1976d2;">Viernes</label>
+												 <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" name="dias" value="Lunes" style="accent-color:#1976d2;" ${grupoEditando && grupoEditando.dias.includes('Lunes') ? 'checked' : ''}>Lunes</label>
+												 <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" name="dias" value="Martes" style="accent-color:#1976d2;" ${grupoEditando && grupoEditando.dias.includes('Martes') ? 'checked' : ''}>Martes</label>
+												 <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" name="dias" value="Miércoles" style="accent-color:#1976d2;" ${grupoEditando && grupoEditando.dias.includes('Miércoles') ? 'checked' : ''}>Miércoles</label>
+												 <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" name="dias" value="Jueves" style="accent-color:#1976d2;" ${grupoEditando && grupoEditando.dias.includes('Jueves') ? 'checked' : ''}>Jueves</label>
+												 <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" name="dias" value="Viernes" style="accent-color:#1976d2;" ${grupoEditando && grupoEditando.dias.includes('Viernes') ? 'checked' : ''}>Viernes</label>
 											 </div>
 										 </div>
 										 <div id="horarios-por-dia" style="margin-bottom:16px;"></div>
 										 <div style="margin-bottom:18px;">
 											 <label style="display:block;font-weight:500;margin-bottom:6px;">Clases requeridas/mes</label>
-											 <input name="clases_mes" required type="number" min="1" style="width:100%;padding:8px 10px;border:1.5px solid #b0bec5;border-radius:6px;font-size:1rem;outline:none;transition:border .2s;" onfocus="this.style.borderColor='#1976d2'">
+											 <input name="clases_mes" required type="number" min="1" style="width:100%;padding:8px 10px;border:1.5px solid #b0bec5;border-radius:6px;font-size:1rem;outline:none;transition:border .2s;" onfocus="this.style.borderColor='#1976d2'" value="${grupoEditando ? grupoEditando.clases_mes : ''}">
 										 </div>
-										 <button type="submit" style="background:#1976d2;color:white;padding:10px 0;width:100%;font-size:1.1rem;font-weight:600;border:none;border-radius:8px;box-shadow:0 2px 8px #1976d233;cursor:pointer;transition:background .2s;">Crear grupo</button>
+										 <button type="submit" style="background:#1976d2;color:white;padding:10px 0;width:100%;font-size:1.1rem;font-weight:600;border:none;border-radius:8px;box-shadow:0 2px 8px #1976d233;cursor:pointer;transition:background .2s;">${grupoEditando ? 'Guardar cambios' : 'Crear grupo'}</button>
+										 ${grupoEditando ? '<button type="button" id="btn-eliminar-grupo" style="background:#c00;color:white;padding:10px 0;width:100%;font-size:1.1rem;font-weight:600;border:none;border-radius:8px;margin-top:10px;box-shadow:0 2px 8px #c003;cursor:pointer;">Eliminar grupo</button>' : ''}
 									 </form>`;
 					// Script para mostrar campos de horarios por cada día seleccionado
 					const diasCheckboxes = formContainer.querySelectorAll('input[name="dias"]');
@@ -174,8 +175,27 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
 					formContainer.querySelector('#grupo-form').onsubmit = function(e) {
 						e.preventDefault();
 						const data = Object.fromEntries(new FormData(e.target));
-						onCrearGrupo(data);
+						if (grupoEditando) {
+							onGuardarEdicion(data);
+						} else {
+							onCrearGrupo(data);
+						}
 					};
+					if (grupoEditando && formContainer.querySelector('#btn-eliminar-grupo')) {
+						formContainer.querySelector('#btn-eliminar-grupo').onclick = function() {
+							if (confirm('¿Eliminar este grupo y todos sus estudiantes?')) {
+								let grupos = [];
+								try { grupos = JSON.parse(localStorage.getItem('grupos') || '[]'); } catch (e) {}
+								grupos.splice(grupoEditando.idx, 1);
+								localStorage.setItem('grupos', JSON.stringify(grupos));
+								let estudiantes = [];
+								try { estudiantes = JSON.parse(localStorage.getItem('estudiantes') || '[]'); } catch (e) {}
+								estudiantes = estudiantes.filter(e => e.grupo !== grupoEditando.nombre);
+								localStorage.setItem('estudiantes', JSON.stringify(estudiantes));
+								location.reload();
+							}
+						};
+					}
 				}
 			};
 		}
