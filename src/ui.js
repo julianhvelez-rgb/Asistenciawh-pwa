@@ -38,7 +38,6 @@ export function renderMenuScreen(container, onNavigate, onCambiarCred, onLogout)
     </div>
   `;
   document.getElementById('btn-grupos').onclick = () => onNavigate('grupo');
-  document.getElementById('btn-estudiantes').onclick = () => onNavigate('registro');
   document.getElementById('btn-asistencia').onclick = () => onNavigate('asistencia');
   document.getElementById('btn-reporte').onclick = () => onNavigate('reporte');
   document.getElementById('settings-icon').onclick = onCambiarCred;
