@@ -35,7 +35,7 @@ export function renderMenuScreen(container, onNavigate, onCambiarCred, onLogout)
 			</button>
 		</div>
 		<div class="menu-screen">
-			<h1>Control de Asistencia</h1>
+	 		<h1>Control de Asistencia WH</h1>
 			<button id="btn-grupos">Gestión de Grupos</button>
 			<button id="btn-asistencia">Control de Asistencia</button>
 			<button id="btn-reporte">Reporte Mensual</button>
