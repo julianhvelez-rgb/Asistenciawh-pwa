@@ -123,7 +123,7 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
       <h2 style="margin:0;">Gestión de Grupos</h2>
       <button id="btn-mas-grupo" title="Crear nuevo grupo" style="background:none;border:none;cursor:pointer;padding:2px;font-size:22px;line-height:1;">+</button>
     </div>
-    <div id="grupo-form-container" style="display:none;margin-bottom:16px;"></div>
+    <div id="grupo-form-container" style="display:${grupoEditando ? 'block' : 'none'};margin-bottom:16px;"></div>
     <div id="grupo-error" style="color:red;">${errorMsg||''}</div>
     <h3>Grupos creados:</h3>
     <ul id="grupos-list"></ul>
@@ -133,7 +133,48 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
   // Lógica para mostrar el formulario de grupo y manejar horarios
   setTimeout(() => {
     const btnMasGrupo = document.getElementById('btn-mas-grupo');
-    if (btnMasGrupo) {
+    const formContainer = document.getElementById('grupo-form-container');
+    // Si estamos editando, mostrar el formulario con los datos del grupo a editar
+    if (grupoEditando && formContainer) {
+      const grupo = grupos[grupoEditando.idx];
+      let diasMarcados = Array.isArray(grupo.dias) ? grupo.dias : (typeof grupo.dias === 'string' ? grupo.dias.split(',') : []);
+      formContainer.innerHTML =
+        '<form id="grupo-form">' +
+          '<label>Nombre del grupo:<input name="nombre" required value="' + (grupo.nombre || '') + '"></label><br>' +
+          '<label>Días:<br>' +
+            ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'].map(dia =>
+              '<input type="checkbox" name="dias" value="'+dia+'"'+(diasMarcados.includes(dia)?' checked':'')+'>'+dia+' '
+            ).join('') +
+          '</label><br>' +
+          '<div id="horarios-por-dia"></div>' +
+          '<label>Clases requeridas/mes:<input name="clases_mes" required value="' + (grupo.clases_mes || '') + '"></label><br>' +
+          '<button type="submit">Guardar cambios</button> <button type="button" id="btn-cancelar-edicion">Cancelar</button>' +
+        '</form>';
+      // Script para mostrar campos de horarios por cada día seleccionado
+      const diasCheckboxes = formContainer.querySelectorAll('input[name="dias"]');
+      const horariosPorDiaDiv = formContainer.querySelector('#horarios-por-dia');
+      function actualizarHorariosPorDia() {
+        horariosPorDiaDiv.innerHTML = '';
+        diasCheckboxes.forEach(cb => {
+          if (cb.checked) {
+            const dia = cb.value;
+            horariosPorDiaDiv.innerHTML += '<div style="margin-bottom:8px;">' +
+              '<b>' + dia + '</b><br>' +
+              '<label>Hora inicio:<input name="hora_inicio_' + dia + '" type="time" value="' + (grupo['hora_inicio_'+dia]||'') + '"></label>' +
+              '<label>Hora fin:<input name="hora_fin_' + dia + '" type="time" value="' + (grupo['hora_fin_'+dia]||'') + '"></label>' +
+              '</div>';
+          }
+        });
+      }
+      diasCheckboxes.forEach(cb => cb.addEventListener('change', actualizarHorariosPorDia));
+      actualizarHorariosPorDia();
+      formContainer.querySelector('#grupo-form').onsubmit = function(e) {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target));
+        onGuardarEdicion({...data, idx: grupoEditando.idx});
+      };
+      formContainer.querySelector('#btn-cancelar-edicion').onclick = onCancelarEdicion;
+    } else if (btnMasGrupo) {
       btnMasGrupo.onclick = function() {
         const formContainer = document.getElementById('grupo-form-container');
         formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
@@ -171,14 +212,14 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
             });
           }
           diasCheckboxes.forEach(cb => cb.addEventListener('change', actualizarHorariosPorDia));
-                        formContainer.querySelector('#grupo-form').onsubmit = function(e) {
-                          e.preventDefault();
-                          const data = Object.fromEntries(new FormData(e.target));
-                          onCrearGrupo(data);
-                        };
-                      }
-                    };
-                  }
+          formContainer.querySelector('#grupo-form').onsubmit = function(e) {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target));
+            onCrearGrupo(data);
+          };
+        }
+      };
+    }
                   // Manejar registro de estudiantes por grupo
                   document.querySelectorAll('.estudiante-form-grupo').forEach(form => {
                     // Manejar visibilidad de campos según tipo
