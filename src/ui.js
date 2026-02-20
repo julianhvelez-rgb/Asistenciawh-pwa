@@ -292,30 +292,24 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
 
 export function renderRegistroScreen(container, estudiantes, grupos, onBack, onRegistrar) {
   container.innerHTML = `
-    <h2>Registro de Estudiantes</h2>
-    <form id="estudiante-form">
-      <label>Tipo:
-        <select name="tipo">
-          <option value="Menor">Menor</option>
-          <option value="Adulto">Adulto</option>
-        </select>
-      </label><br>
-      <label>Nombre completo:<input name="nombre" required></label><br>
-      <label>Contacto:<input name="contacto"></label><br>
-      <label>Grupo:
-        <select name="grupo" required>
-          <option value="">Seleccione un grupo</option>
-          ${grupos && grupos.length ? grupos.map(g => `<option value="${g.nombre}">${g.nombre}</option>`).join('') : ''}
-        </select>
-      </label><br>
-      <label>Padres:<input name="padres"></label><br>
-      <label>Contacto padres:<input name="contacto_padres"></label><br>
-      <button type="submit">Registrar estudiante</button>
-    </form>
-    <h3>Estudiantes registrados:</h3>
-    <ul id="estudiantes-list"></ul>
-    <button id="btn-back">Volver al menú</button>
-  `;
+      <h2>Inscripción de Estudiantes</h2>
+      <form id="estudiante-form">
+        <label>Nombre completo:<input name="nombre" required></label><br>
+        <label>Fecha de nacimiento:<input name="fecha_nacimiento" type="date" required></label><br>
+        <label>Nombre del padre:<input name="padres" required></label><br>
+        <label>Contacto del padre:<input name="contacto_padres" required></label><br>
+        <label>Grupo:
+          <select name="grupo" required>
+            <option value="">Seleccione un grupo</option>
+            ${grupos && grupos.length ? grupos.map(g => `<option value="${g.nombre}">${g.nombre}</option>`).join('') : ''}
+          </select>
+        </label><br>
+        <button type="submit">Registrar estudiante</button>
+      </form>
+      <h3>Estudiantes registrados:</h3>
+      <ul id="estudiantes-list"></ul>
+      <button id="btn-back">Volver al menú</button>
+    `;
   document.getElementById('btn-back').onclick = onBack;
   document.getElementById('estudiante-form').onsubmit = e => {
     e.preventDefault();
