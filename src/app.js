@@ -195,7 +195,8 @@ function registrarEstudiante(data) {
 		grupo: data.grupo,
 		tipo: data.tipo,
 		padres: data.padres,
-		contacto_padres: data.contacto_padres
+		contacto_padres: data.contacto_padres,
+		fecha_nacimiento: data.fecha_nacimiento || ''
 	};
 	estudiantes.push(estudiante);
 	localStorage.setItem('estudiantes', JSON.stringify(estudiantes));
