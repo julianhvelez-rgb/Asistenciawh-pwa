@@ -84,15 +84,22 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
         <b>${g.nombre}</b><br>
         <form class="estudiante-form-grupo" data-grupo="${g.nombre}">
           <label>Tipo:
-            <select name="tipo">
+            <select name="tipo" class="tipo-estudiante-select">
               <option value="Menor">Menor</option>
               <option value="Adulto">Adulto</option>
             </select>
           </label><br>
-          <label>Nombre completo:<input name="nombre" required></label><br>
-          <label>Contacto:<input name="contacto"></label><br>
-          <label>Padres:<input name="padres"></label><br>
-          <label>Contacto padres:<input name="contacto_padres"></label><br>
+          <div class="campos-menor">
+            <label>Nombre completo:<input name="nombre" required></label><br>
+            <label>Fecha de nacimiento:<input name="fecha_nacimiento" type="date" required></label><br>
+            <label>Contacto:<input name="contacto"></label><br>
+            <label>Padres:<input name="padres"></label><br>
+            <label>Contacto padres:<input name="contacto_padres"></label><br>
+          </div>
+          <div class="campos-adulto" style="display:none">
+            <label>Nombre completo:<input name="nombre" required></label><br>
+            <label>Contacto:<input name="contacto"></label><br>
+          </div>
           <input type="hidden" name="grupo" value="${g.nombre}">
           <button type="submit">Registrar estudiante</button>
         </form>
@@ -174,6 +181,27 @@ export function renderGrupoScreen(container, grupos, onBack, onCrearGrupo, onEdi
                   }
                   // Manejar registro de estudiantes por grupo
                   document.querySelectorAll('.estudiante-form-grupo').forEach(form => {
+                    // Manejar visibilidad de campos según tipo
+                    const tipoSelect = form.querySelector('.tipo-estudiante-select');
+                    const camposMenor = form.querySelector('.campos-menor');
+                    const camposAdulto = form.querySelector('.campos-adulto');
+                    function actualizarCampos() {
+                      if (tipoSelect.value === 'Menor') {
+                        camposMenor.style.display = '';
+                        camposAdulto.style.display = 'none';
+                        // Hacer requeridos los campos de menor
+                        camposMenor.querySelectorAll('input').forEach(i => i.required = true);
+                        camposAdulto.querySelectorAll('input').forEach(i => i.required = false);
+                      } else {
+                        camposMenor.style.display = 'none';
+                        camposAdulto.style.display = '';
+                        // Hacer requeridos los campos de adulto
+                        camposAdulto.querySelectorAll('input').forEach(i => i.required = true);
+                        camposMenor.querySelectorAll('input').forEach(i => i.required = false);
+                      }
+                    }
+                    tipoSelect.addEventListener('change', actualizarCampos);
+                    actualizarCampos();
                     form.onsubmit = function(e) {
                       e.preventDefault();
                       const data = Object.fromEntries(new FormData(form));
