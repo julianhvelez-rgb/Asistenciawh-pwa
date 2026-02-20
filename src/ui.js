@@ -317,7 +317,15 @@ export function renderRegistroScreen(container, estudiantes, grupos, onBack, onR
     onRegistrar(data);
   };
   const ul = document.getElementById('estudiantes-list');
-  ul.innerHTML = estudiantes.map(e => `<li>${e.nombre} (${e.grupo})</li>`).join('');
+  ul.innerHTML = estudiantes.map(e => `
+    <li style="margin-bottom:12px;">
+      <b>Nombre:</b> ${e.nombre}<br>
+      <b>Fecha de nacimiento:</b> ${e.fecha_nacimiento || '-'}<br>
+      <b>Padre:</b> ${e.padres || '-'}<br>
+      <b>Contacto del padre:</b> ${e.contacto_padres || '-'}<br>
+      <b>Grupo:</b> ${e.grupo || '-'}
+    </li>
+  `).join('');
 }
 
 export function renderAsistenciaScreen(container, estudiantes, onBack, onMarcar) {
