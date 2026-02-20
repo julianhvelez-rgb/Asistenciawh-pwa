@@ -137,17 +137,32 @@ function editarGrupo(idx) {
 }
 
 function guardarEdicionGrupo(data) {
-		console.log('guardarEdicionGrupo', data);
-	if (!data.nombre || !data.dia || !data.hora_inicio || !data.hora_fin || !data.clases_mes) {
+	console.log('guardarEdicionGrupo', data);
+	if (!data.nombre || !data.dias || !data.clases_mes) {
 		grupoErrorMsg = 'Completa todos los campos.';
+		navigate('grupo');
+		return;
+	}
+	// Procesar días y horarios igual que en crearGrupo
+	let dias = Array.isArray(data.dias) ? data.dias : [data.dias];
+	let horarios = {};
+	let camposValidos = true;
+	dias.forEach(dia => {
+		const inicio = data[`hora_inicio_${dia}`];
+		const fin = data[`hora_fin_${dia}`];
+		if (!inicio || !fin) camposValidos = false;
+		horarios[dia] = { inicio, fin };
+	});
+	if (!camposValidos) {
+		grupoErrorMsg = 'Completa todos los horarios.';
 		navigate('grupo');
 		return;
 	}
 	if (grupoEditando && typeof grupoEditando.idx === 'number') {
 		grupos[grupoEditando.idx] = {
 			nombre: data.nombre,
-			dias: data.dia,
-			horarios: `${data.hora_inicio}-${data.hora_fin}`,
+			dias,
+			horarios,
 			clases_mes: data.clases_mes
 		};
 		localStorage.setItem('grupos', JSON.stringify(grupos));
